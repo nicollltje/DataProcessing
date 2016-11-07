@@ -1,0 +1,19 @@
+Week 2, javascript questions
+
+Explain the difference between the == operator and the === operator.
+The == operator checks if two values are the same, the === operator checks if the type of these two values is also the same. For example true==1 will be true, but true===1 will be false.
+
+
+Explain what a closure is. (Note that JavaScript programs use closures very often.)
+being able to reference a specific instance of local variables in an enclosing function. 
+A function that “closes over” some local variables is called a closure.
+
+Explain what higher order functions are.
+Functions that operate on other functions, either by taking them as arguments or by returning them, are called higher-order functions. 
+
+Explain what a query selector is and give an example line of JavaScript that uses a query selector.
+a query selector selects a specific element from a DOM. 
+
+return document.querySelectorAll 
+
+will return all elements of a dom.
