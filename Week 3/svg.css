@@ -1,0 +1,23 @@
+/*  Nicol Heijtbrink, 10580611, svg.css */
+
+/* continent color */
+body {
+  color: #00cc99;
+  fill: currentColor;
+}
+
+/* country colors */
+#fra
+{
+	color:#ff0066;
+}
+
+#ita
+{
+	color: #FFA500;
+}
+
+#swe
+{
+	color: #ffff33;
+}
