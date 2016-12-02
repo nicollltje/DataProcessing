@@ -4,14 +4,12 @@
 
 import json
 
-#from pattern.web import URL, DOM, plaintext
-#from pattern.web import NODE, TEXT, COMMENT, ELEMENT, DOCUMENT
 from pattern.web import Wikipedia, WikipediaSection, WikipediaTable
 
 raw_data = {}
 
 # Using the Wikipedia query the table is scraped from Wikipedia
-article = Wikipedia().search('List of European countries by population')
+article = Wikipedia().search('List of countries and dependencies by population')
 section = WikipediaSection(article, title='Table', start=0, stop=100000000000, level=1)
 table = section.tables[0]
 
