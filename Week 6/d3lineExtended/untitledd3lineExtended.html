@@ -18,8 +18,25 @@
 
     <h1>Line Graph Extended</h1>
     <p>Average, minimum and maximum temperature in degrees Celsius (x10) of 1994</p>
-    <div class="linechart"></div>
+  <div>
+    <div class="btn-group pull-right">
+      <button type="button", class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+        "City"
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li>
+          <a class="m" value="Leeuwarden" href="#">Leeuwarden</a>
+        </li>
+        <li>
+          <a class="m" value="Maastricht" href="#">Maastricht</a>
+        </li>
+      </ul>
+    </div>
+    <div class="linechart">
 
+    </div>
+  </div>
   	<!-- Write your functions in d3line.js -->
     <script src="d3lineExtended.js"></script>
 
