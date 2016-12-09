@@ -1,0 +1,15 @@
+.line {
+    fill: none;
+    stroke: red;
+    stroke-width: 1.5px;
+    }
+    .x_axis{
+      line-width: 1px;
+    }
+    .y_axis{
+      line-width: 0.5px;
+    }
+    .overlay {
+    fill: none;
+    pointer-events: all;
+    }

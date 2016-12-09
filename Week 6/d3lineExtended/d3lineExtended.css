@@ -1,0 +1,25 @@
+    .lineMin {
+    fill: none;
+    stroke: blue;
+    stroke-width: 1.5px;
+    }
+    .lineMax {
+    fill: none;
+    stroke: red;
+    stroke-width: 1.5px;
+    }
+    .lineAvg {
+    fill: none;
+    stroke: green;
+    stroke-width: 1.5px;
+    }
+    .x_axis{
+      line-width: 1px;
+    }
+    .y_axis{
+      line-width: 0.5px;
+    }
+    .overlay {
+    fill: none;
+    pointer-events: all;
+    }

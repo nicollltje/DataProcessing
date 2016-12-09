@@ -12,7 +12,7 @@ d3.json("weatherdata1994.json", function(data){
 	var x = d3.time.scale()
 		.range([0, width])
 	var y  = d3.scale.linear()
-		.range([height, 0]);
+		.range([height, 10]);
 
 	// set the axis of the graph
 	var xAxis = d3.svg.axis()
@@ -31,7 +31,9 @@ d3.json("weatherdata1994.json", function(data){
 			d.date = parseDate(d.date);
 			d.city = d.city
 			//console.log(d.city)
-			d.temperatures = Number(d.temperatures[2]);
+			d.minTemperature = Number(d.temperatures[0])
+			d.maxTemperature = Number(d.temperatures[1])
+			d.avgTemperature = Number(d.temperatures[2])
 			//console.log(d.date, d.temperatures)
 			return d;
 	});
@@ -39,17 +41,33 @@ d3.json("weatherdata1994.json", function(data){
 	// 	d.date = d.Leeuw[i].temperatures[2]
 	// 	console.log(d.date)
 	// }
-
+	console.log(d3.extent(data, function(d) { if(d.city =="Leeuwarden"){
+		return d.maxTemperature; }}))
 	x.domain(d3.extent(data, function(d) { if(d.city =="Leeuwarden"){
 		return d.date; }}));
-	y.domain(d3.extent(data, function(d) { if(d.city =="Leeuwarden"){
-		return d.temperatures; }}));
+	y.domain([
+		d3.min(data, function(d){return d.minTemperature}),
+		d3.max(data, function(d) { if(d.city =="Leeuwarden"){
+		return d.maxTemperature; }})
+		]);
 	// make a line from the datapoints
-	var line = d3.svg.line()
+	var lineMin = d3.svg.line()
 		.x(function(d) {if(d.city == "Leeuwarden"){
 			return x(d.date); } else{return x.domain} })
 		.y(function(d) {if(d.city == "Leeuwarden"){
-			return y(d.temperatures); } else{return y.domain} });
+			return y(d.minTemperature); } else{return y.domain} });
+
+	var lineMax = d3.svg.line()
+		.x(function(d) {if(d.city == "Leeuwarden"){
+			return x(d.date); } else{return x.domain} })
+		.y(function(d) {if(d.city == "Leeuwarden"){
+			return y(d.maxTemperature); } else{return y.domain} });
+
+	var lineAvg = d3.svg.line()
+		.x(function(d) {if(d.city == "Leeuwarden"){
+			return x(d.date); } else{return x.domain} })
+		.y(function(d) {if(d.city == "Leeuwarden"){
+			return y(d.avgTemperature); } else{return y.domain} });
 
 	svg.append("g")
       .attr("class", "x_axis")
@@ -58,13 +76,32 @@ d3.json("weatherdata1994.json", function(data){
 
 	svg.append("g")
 		.attr("class", "y_axis")
-		.call(yAxis);
+		.call(yAxis)
+		.append("text")
+		.attr("fill", "#000")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", "0.50em")
+		.style("text-anchor", "end")
+		.text("Temperatures in degrees Celcius (x10)");
 
 	svg.append("path")
 		.datum(data)
-		.attr("class", "line")
+		.attr("class", "lineMin")
+		.style("stroke", "blue")
+		.attr("d", lineMin)
+
+	svg.append("path")
+		.datum(data)
+		.attr("class", "lineMax")
 		.style("stroke", "red")
-		.attr("d", line)
+		.attr("d", lineMax)
+
+	svg.append("path")
+		.datum(data)
+		.attr("class", "lineAvg")
+		.style("stroke", "yellow")
+		.attr("d", lineAvg)
 
 	var focus = svg.append("g")
       .attr("class", "focus")
@@ -91,8 +128,8 @@ d3.json("weatherdata1994.json", function(data){
         d0 = data[i - 1],
         d1 = data[i],
         d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-    focus.attr("transform", "translate(" + x(d.date) + "," + y(d.temperatures) + ")");
-    focus.select("text").text((d.temperatures));
+    focus.attr("transform", "translate(" + x(d.date) + "," + y(d.avgTemperature) + ")");
+    focus.select("text").text((d.avgTemperature));
   }
 
 });
