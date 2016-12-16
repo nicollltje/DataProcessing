@@ -257,6 +257,7 @@ d3.json("worldpopulation.json", function(data){
     data.forEach(function(d) {
             d.percentage = parseFloat(d.percentage);
             d.country = d.country
+            d.population = parseInt(d.population.split(',').join(''));
             return d;
     });
     
@@ -411,6 +412,73 @@ d3.json("worldpopulation.json", function(data){
             .style("fill", "yellow")      
     };
 
+    var barWidth = 10;
+        var width = (barWidth + 5) * data.length;
+        var height = 500;
+
+        
+        var x = d3.scale.linear()
+                .domain([0, data.length])
+                .range([0, width]);
+        var y = d3.scale.linear()
+                .domain([0, d3.max(data, function(d) { return d.population; })])
+                .range([0, height - 30]);
+
+        var color = d3.scale.linear()
+                .domain([0, d3.max(data, function(datum) { return datum.population; })]);
+
+        var axis = d3.svg.axis()
+            .scale( x )
+            .ticks(data.length);
+
+        // add svg element to body of the html
+        var canvas = d3.select(".barchart").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+
+        // add rectangles as bars to the canvas
+        canvas.selectAll("rect")
+            .data(data)
+            .enter()
+                .append("rect")
+                .attr("x", function(d, index) { return x(index); })
+                .attr("y", function(d) { return height - y(d.population); })
+                .attr("height", function(d) { return y(d.population); })
+                .attr("width", barWidth)
+                .attr("fill", "#85548c" );
+
+        // add the value to the bars
+        canvas.selectAll("text")
+            .data(data)
+            .enter()
+                .append("text")
+                // .attr("transform","rotate(10)")
+                .attr("x", function(d, index) { return x(index) + barWidth; })
+                .attr("y", function(d) { return height - y(d.population); })
+                .attr("dx", -barWidth/2)
+                .attr("dy", "1.2em")
+                .attr("text-anchor", "middle")
+                .attr("style", "font-size: 10; font-family: Helvetica, sans-serif")
+                .text(function(d) { return d.population;})
+                .attr("fill", "#blue");
+
+        // add the y axis labels
+        canvas.selectAll("text.yAxis")
+            .data(data)
+            .enter()
+                .append("text")
+                .attr("x", function(d, index) { return x(index) + barWidth; })
+                .attr("y", height)
+                .attr("dx", -barWidth/2)
+                // .attr("text-anchor", "middle")
+                .attr("style", "font-size: 10; font-family: Helvetica, sans-serif")
+                .text(function(d) { return d.country; })
+                .attr("transform", "translate(0, -100) rotate(90)")
+                .attr("class", "yAxis")
+                // .attr("transform","rotate(10)")
+                .attr("fill", "black ");
+
     // get the 3 letter country code for the country name
     function getThreeLetters(country){
 		for (j = 0; j < country_codes.length; j++){
@@ -463,7 +531,7 @@ d3.json("worldpopulation.json", function(data){
 	for (i = 0; i < data.length; i++){
 		country = getThreeLetters(data[i].country);
 		population = data[i].population;
-		var populationNumber = parseInt(population.split(',').join(''));
+		var populationNumber = population;
 		var populationColor = getValueForPopulation(populationNumber);
 		dataset[country] = {fillKey: populationColor, population: populationNumber};
 		
