@@ -259,60 +259,157 @@ d3.json("worldpopulation.json", function(data){
             d.country = d.country
             return d;
     });
+    
 
-    // define size parameters for the pie chart
-    var width = 600,
-    height = 500,
-    radius = Math.min(width - 50, height - 50) / 2;
+    // the function that draws piechart
+    function drawPie(country_id) {
 
-    // sets a color range to be used by the pie chart
-    var color = d3.scale.ordinal()
-        .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+        country = getCountry(country_id);
 
-    // create an arc as pie chart
-    var arc = d3.svg.arc()
-        .outerRadius(radius - 10)
-        .innerRadius(0);
+        // define size parameters for the pie chart
+        var width = 700,
+        height = 350,
+        radius = Math.min(width - 50, height - 50) / 2;
 
-    // make the labels that go in the pie chart
-    var labelArc = d3.svg.arc()
-        .outerRadius(radius - 60)
-        .innerRadius(radius - 60);
+        // sets a color range to be used by the pie chart
+        var color = d3.scale.ordinal()
+            .range(["#c51b7d", "#de77ae", "#f1b6da", "#fde0ef", "#f7f7f7", "#e6f5d0", "#b8e186", "#7fbc41", "#4d9221"]);
 
-    // create a pie using the percentage data
-    var pie = d3.layout.pie()
-        .sort(null)
-        .value(function(d){return d.percentage});
+        // create an arc as pie chart
+        var arc = d3.svg.arc()
+            .outerRadius(radius - 10)
+            .innerRadius(0);
 
-    // add an svg to the htlm to hold the pie chart
-    var svg = d3.select(".piechart").append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .append("g")
-        .attr("transform", "translate(" + (width - 50) / 2 + "," + (height - 50) / 2 + ")");
+        // make the labels that go in the pie chart
+        var labelArc = d3.svg.arc()
+            .outerRadius(radius - 60)
+            .innerRadius(radius - 60);
 
-    // adds the pie chart to the svg
-    var g = svg.selectAll(".arc")
-        .data(pie(data))
-        .enter().append("g")
-        .attr("class", "arc")
-        .attr("id", "piepart");
+        // create a pie using the percentage data
+        var pie = d3.layout.pie()
+            .sort(null)
+            .value(function(d){return d.percentage});
 
-    // make an acr path for all the datapoints
-    g.append("path")
-        .attr("d", arc)
-        .style("fill", function(d) { return color(d.data.percentage);});
+        // add an svg to the htlm to hold the pie chart
+        var svg = d3.select(".piechart").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("class", "pie")
+            .append("g")
+            .attr("transform", "translate(" + (width - 50) / 2 + "," + (height - 50) / 2 + ")");
 
-    // adds the labels to the piechart for the largest populated countries
-    g.append("text")
-        .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
-        //.attr("text-anchor", "middle")
-        .attr("dy", ".35em")
-        .text(function(d) {
-            if (d.data.percentage > 3.0){
-                return d.data.country;
-            }
-        } );
+        // adds the pie chart to the svg
+        var g = svg.selectAll(".arc")
+            .data(pie(data))
+            .enter()
+            .append("g")
+            .attr("class", "arc")
+            .attr("id", "piepart");
+
+        // make an acr path for all the datapoints
+        g.append("path")
+            .attr("d", arc)
+            .style("fill", function(d) { 
+                if (d.data.country == country){
+                    return "red"
+                }
+                else {
+                    return color(d.data.percentage);}
+                }
+            )
+            .attr("stroke",function(d) {
+                if (d.data.country == country){ return "white" } }
+            );
+          
+
+        // adds the labels to the piechart for the largest populated countries
+        g.append("text")
+            .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+            .attr("class", "percent-text")
+            .attr("dy", ".35em");
+            
+    };
+
+        // the function that draws piechart
+    function drawPieSelection(country_id) {
+
+        country = getCountry(country_id);
+
+        // define size parameters for the pie chart
+        var width = 700,
+        height = 350,
+        radius = Math.min(width - 50, height - 50) / 2;
+
+        // create an arc as pie chart
+        var arc = d3.svg.arc()
+            .outerRadius(radius - 10)
+            .innerRadius(0);
+
+        // make the labels that go in the pie chart
+        var labelArc = d3.svg.arc()
+            .outerRadius(radius - 60)
+            .innerRadius(radius - 60);
+
+        // create a pie using the percentage data
+        var pie = d3.layout.pie()
+            .sort(null)
+            .value(function(d){return d.percentage});
+
+        // add an svg to the htlm to hold the pie chart
+        var svg = d3.select(".pie")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("class", "pie")
+            .append("g")
+            .attr("transform", "translate(" + (width - 50) / 2 + "," + (height - 50) / 2 + ")");
+
+        // adds the pie chart to the svg
+        var g = svg.selectAll(".arc")
+            .data(pie(data))
+            .enter()
+            .append("g")
+            .attr("class", "arc")
+            .attr("id", "piepart");
+
+        // make an acr path for all the datapoints
+        g.append("path")
+            .attr("d", arc)
+            .style("fill", function(d) { 
+                if (d.data.country == country){
+                    return "red"
+                }
+                else {
+                    return "none";}
+                }
+            )
+            .attr("stroke",function(d) {
+                if (d.data.country == country){ return "white" } }
+            );
+          
+
+        // adds the labels to the piechart for the largest populated countries
+        g.append("text")
+            .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+            .attr("class", "percent-text")
+            .attr("dy", ".35em")
+            .text(function(d) {  
+                if (d.data.country == country){
+                    string = d.data.country + " - " + d.data.percentage + " % of the worldpopulation"
+                    
+                    return string;
+                }
+            })
+            .attr("font-weight", "bold")
+            .attr("font-size", "15px")
+            .attr("fill", "black");
+
+
+        g.insert("percent-text", "text")
+            .attr("width", 100.0)
+            .attr("height", 100.0)
+            .style("fill", "yellow")      
+    };
 
     // get the 3 letter country code for the country name
     function getThreeLetters(country){
@@ -338,28 +435,28 @@ d3.json("worldpopulation.json", function(data){
 
     // function that returns a value for the corresponding population to set the fillkey
 	function getValueForPopulation(population){
-	if (population > 1000000000) {
-		return 'Very_High';
-	}
-	else if (population > 500000000) {
-		return 'High';
-	}
-	else if (population > 100000000) {
-		return 'Medium_High';
-	}
-	else if (population > 50000000) {
-		return 'Medium';
-	}
-	else if (population > 10000000) {
-		return 'Medium_Low';
-	}
-	else if (population > 5000000) {
-		return 'Low';
-	}
-	else if (population < 5000000) {
-		return 'Very_Low';
-	}
-}
+    	if (population > 1000000000) {
+    		return 'Very_High';
+    	}
+    	else if (population > 500000000) {
+    		return 'High';
+    	}
+    	else if (population > 100000000) {
+    		return 'Medium_High';
+    	}
+    	else if (population > 50000000) {
+    		return 'Medium';
+    	}
+    	else if (population > 10000000) {
+    		return 'Medium_Low';
+    	}
+    	else if (population > 5000000) {
+    		return 'Low';
+    	}
+    	else if (population < 5000000) {
+    		return 'Very_Low';
+    	}
+    }
 
     // puts the data with their fillkey in the dataset for the map
 	var dataset = {};
@@ -378,45 +475,9 @@ d3.json("worldpopulation.json", function(data){
         // makes it responsive to clicking on countries
         done: function(datamap, data) {
             datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
-                var elements;
-
-            if (document.getElementsByClassName)
-            {
-                elements = document.getElementsByClassName("arc");
-            }
-            else
-            {
-                var elArray = [];
-                var tmp = document.getElementsByTagName(g);  
-                var regex = new RegExp("(^|\\s)" + className+ "(\\s|$)");
-                for ( var i = 0; i < tmp.length; i++ ) {
-
-                    if ( regex.test(tmp[i].className) ) {
-                        elArray.push(tmp[i]);
-                    }
-                }
-
-                elements = elArray;
-            }
-
-            for (i = 0; i < elements.length; i++ ) {
-               if( elements[i].textContent == ''){
-                  elements[i].style.display = 'none';
-               } 
-            }
-
-                // var elements = document.getElementsByClassName("arc").textContent;
-                // for(var i = 0, length = elements.length; i < length; i++){
-                //     console.log(elements)
-                // }
-                // console.log(data);
-                // for (i = 0; i < data.length; i++){
-                //     console.log(data[i].country)
-                // }
-                // if (data.country == getCountry(geography.id)){
-                //     console.log(d.data.percentage);
-                // }
-                    
+                d3.selectAll(".pie").remove();
+                drawPie(geography.id);
+                drawPieSelection(geography.id);                    
             });
         },
         element: document.getElementById('container'),
