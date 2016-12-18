@@ -260,7 +260,6 @@ d3.json("worldpopulation.json", function(data){
             d.population = parseInt(d.population.split(',').join(''));
             return d;
     });
-    
 
     // the function that draws piechart
     function drawPie(country_id) {
@@ -320,18 +319,10 @@ d3.json("worldpopulation.json", function(data){
             )
             .attr("stroke",function(d) {
                 if (d.data.country == country){ return "white" } }
-            );
-          
-
-        // adds the labels to the piechart for the largest populated countries
-        g.append("text")
-            .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
-            .attr("class", "percent-text")
-            .attr("dy", ".35em");
-            
+            );       
     };
 
-        // the function that draws piechart
+    // the function that draws the label of the country that has been clicked
     function drawPieSelection(country_id) {
 
         country = getCountry(country_id);
@@ -394,29 +385,30 @@ d3.json("worldpopulation.json", function(data){
             .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
             .attr("class", "percent-text")
             .attr("dy", ".35em")
+            // gives appropriate label for the selected country in the pie chart
             .text(function(d) {  
                 if (d.data.country == country){
                     string = d.data.country + " - " + d.data.percentage + " % of the worldpopulation"
-                    
                     return string;
                 }
             })
             .attr("font-weight", "bold")
             .attr("font-size", "15px")
-            .attr("fill", "black");
-
-
-        g.insert("percent-text", "text")
-            .attr("width", 100.0)
-            .attr("height", 100.0)
-            .style("fill", "yellow")      
+            .attr("fill", "black");   
     };
 
-    var barWidth = 10;
+    // the function that draws a barchart
+    function drawBarChart(country_id) {
+        
+        // get the country from the id that is passed in as parameter
+        country = getCountry(country_id);
+        
+        // set the size parameters for the bargraph
+        var barWidth = 10;
         var width = (barWidth + 5) * data.length;
         var height = 500;
 
-        
+        // sets the scales for the graph
         var x = d3.scale.linear()
                 .domain([0, data.length])
                 .range([0, width]);
@@ -426,7 +418,8 @@ d3.json("worldpopulation.json", function(data){
 
         var color = d3.scale.linear()
                 .domain([0, d3.max(data, function(datum) { return datum.population; })]);
-
+        
+        // make axis
         var axis = d3.svg.axis()
             .scale( x )
             .ticks(data.length);
@@ -435,6 +428,7 @@ d3.json("worldpopulation.json", function(data){
         var canvas = d3.select(".barchart").append("svg")
             .attr("width", width)
             .attr("height", height)
+            .attr("class", "bar")
             .append("g")
 
         // add rectangles as bars to the canvas
@@ -446,39 +440,32 @@ d3.json("worldpopulation.json", function(data){
                 .attr("y", function(d) { return height - y(d.population); })
                 .attr("height", function(d) { return y(d.population); })
                 .attr("width", barWidth)
-                .attr("fill", "#85548c" );
+                // colours the selected country bar red, and the others blue
+                .attr("fill", function(d){
+                    if (country == d.country){
+                        return "red";
+                    } else { return "#41b6c4"}
+        });
 
         // add the value to the bars
         canvas.selectAll("text")
             .data(data)
             .enter()
-                .append("text")
-                // .attr("transform","rotate(10)")
-                .attr("x", function(d, index) { return x(index) + barWidth; })
-                .attr("y", function(d) { return height - y(d.population); })
-                .attr("dx", -barWidth/2)
-                .attr("dy", "1.2em")
-                .attr("text-anchor", "middle")
-                .attr("style", "font-size: 10; font-family: Helvetica, sans-serif")
-                .text(function(d) { return d.population;})
-                .attr("fill", "#blue");
-
-        // add the y axis labels
-        canvas.selectAll("text.yAxis")
-            .data(data)
-            .enter()
-                .append("text")
-                .attr("x", function(d, index) { return x(index) + barWidth; })
-                .attr("y", height)
-                .attr("dx", -barWidth/2)
-                // .attr("text-anchor", "middle")
-                .attr("style", "font-size: 10; font-family: Helvetica, sans-serif")
-                .text(function(d) { return d.country; })
-                .attr("transform", "translate(0, -100) rotate(90)")
-                .attr("class", "yAxis")
-                // .attr("transform","rotate(10)")
-                .attr("fill", "black ");
-
+            .append("text")
+            .attr("x", function(d, index) { return x(index) + barWidth; })
+            .attr("y", function(d) { return height - y(d.population); })
+            .attr("dx", -barWidth/2)
+            .attr("dy", "-1.1em")
+            .attr("text-anchor", "begin")
+            .attr("style", "font-size: 15; font-family: Helvetica, sans-serif")
+            // adds only the text of the selected country
+            .text(function(d) { 
+                if (country == d.country){
+                    string = d.country + " - population: " + d.population;
+                    return string;}})
+            .attr("fill", "black");
+    };
+    
     // get the 3 letter country code for the country name
     function getThreeLetters(country){
 		for (j = 0; j < country_codes.length; j++){
@@ -526,6 +513,22 @@ d3.json("worldpopulation.json", function(data){
     	}
     }
 
+    // function that draws a pie- or barchart on click of the button depending on the state of the button
+    function buttonClicked(country_id){
+        var button = document.getElementById("myonoffswitch")
+        // if the button is set to pie chart the barchart is removed and a pie chart is drawn
+        if (button.checked == false){
+            d3.selectAll(".bar").remove();
+            drawPie(country_id);
+            drawPieSelection(country_id);
+        }
+        // if the button is set to barchart the pie chart is removed and a barchart is drawn
+        else if (button.checked == true){
+            d3.selectAll(".pie").remove();
+            drawBarChart(country_id);
+        }
+    };
+
     // puts the data with their fillkey in the dataset for the map
 	var dataset = {};
 	for (i = 0; i < data.length; i++){
@@ -543,9 +546,24 @@ d3.json("worldpopulation.json", function(data){
         // makes it responsive to clicking on countries
         done: function(datamap, data) {
             datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
+                // removes previous charts before drawing new ones for the right country
                 d3.selectAll(".pie").remove();
-                drawPie(geography.id);
-                drawPieSelection(geography.id);                    
+                d3.selectAll(".bar").remove();
+                var button = document.getElementById("myonoffswitch")
+                // if the button is set to pie chart a pie chart is drawn
+                if (button.checked == false){
+                    drawPie(geography.id);
+                    drawPieSelection(geography.id);
+                }
+                // if the button is set to barchart a barchart is drawn
+                else if (button.checked == true){
+                    drawBarChart(geography.id);
+                }
+                // if the button is clicked the visualisation updates
+                button.onclick = function(){
+                    buttonClicked(geography.id);
+                };
+                                    
             });
         },
         element: document.getElementById('container'),
